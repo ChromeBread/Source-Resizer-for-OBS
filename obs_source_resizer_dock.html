@@ -1,0 +1,424 @@
+<!doctype html>
+<!--
+  Source Resizer - layout dock
+  Add in OBS: Docks -> Custom Browser Docks... and paste the "Dock URL" shown in the script settings.
+  Talks to OBS through obs-websocket v5 (built into OBS 28+).
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Source Resizer</title>
+<style>
+:root{
+  --bg:#1f2129;--panel:#272a34;--field:#1a1c23;--line:#3a3e4b;--text:#e3e5ec;--muted:#9296a6;
+  --accent:#4f8cff;--hover:#30343f;--sel:#2c4c86;--ok:#3ecf74;--warn:#f0b43c;--bad:#ef5a5a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--text);font:12px/1.4 "Segoe UI","Yu Gothic UI","Malgun Gothic","Microsoft JhengHei UI",sans-serif;
+  display:flex;flex-direction:column;overflow:hidden}
+button,input{font:inherit;color:inherit}
+.bar{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar h1{font-size:12px;font-weight:600;margin:0;flex:1;letter-spacing:.02em}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--bad);flex:none}
+.dot.ok{background:var(--ok)}.dot.wait{background:var(--warn)}
+.ibtn{background:none;border:1px solid transparent;border-radius:4px;padding:2px 6px;cursor:pointer;color:var(--muted)}
+.ibtn:hover{background:var(--hover);color:var(--text)}
+main{flex:1;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap}
+.row>label.f{color:var(--muted);flex:none;min-width:64px}
+.grow{flex:1;min-width:0}
+input[type=text],input[type=number],input[type=password]{background:var(--field);border:1px solid var(--line);border-radius:4px;padding:4px 6px;min-width:0;outline:none}
+input:focus{border-color:var(--accent)}
+input[type=number]{width:70px}
+input[type=checkbox]{accent-color:var(--accent);margin:0}
+.btn{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:4px 10px;cursor:pointer}
+.btn:hover{background:var(--hover)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.conn{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.msg{color:var(--warn);font-size:11px}
+.top{display:flex;gap:10px;align-items:stretch}
+/* Each button is a tiny screen with the source already where the click will put it. */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;flex:0 0 150px;align-self:center}
+.a{aspect-ratio:16/9;background:var(--field);border:1px solid var(--line);border-radius:2px;padding:0;cursor:pointer;display:flex}
+.a i{display:block;width:42%;height:48%;margin:auto;background:var(--muted)}
+.a[data-p^=t]{align-items:flex-start}.a[data-p^=t] i{margin-top:0}
+.a[data-p^=b]{align-items:flex-end}.a[data-p^=b] i{margin-bottom:0}
+.a[data-p$=l] i{margin-left:0}.a[data-p$=r] i{margin-right:0}
+.a:hover,.a:focus-visible{border-color:var(--accent);outline:none}
+.a:hover i,.a:focus-visible i{background:var(--text)}
+.a:active i{background:var(--accent)}
+.side{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;justify-content:center}
+.now{font-variant-numeric:tabular-nums;font-size:13px;font-weight:600}
+.now small{font-weight:400;color:var(--muted);font-size:11px}
+.hdr{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:11px}
+.hdr::after{content:"";flex:1;height:1px;background:var(--line)}
+.sizes{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:3px}
+.s{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:2px 4px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;line-height:1.25;font-variant-numeric:tabular-nums}
+.s:hover{background:var(--hover);border-color:var(--muted)}
+.s:active{background:var(--sel)}
+.s small{color:var(--muted);font-size:10px}
+.fav{display:flex;min-width:0}
+.fav .s{flex:1;min-width:0;border-radius:3px 0 0 3px}
+.fav .x{background:var(--panel);border:1px solid var(--line);border-left:0;border-radius:0 3px 3px 0;color:var(--muted);cursor:pointer;padding:0 5px}
+.fav .x:hover{background:var(--hover);color:var(--bad)}
+.empty{color:var(--muted);font-size:11px}
+footer{padding:4px 8px;border-top:1px solid var(--line);color:var(--muted);font-size:10px;text-align:right}
+.hidden{display:none!important}
+.disabled{opacity:.45;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="bar">
+  <span class="dot" id="dot"></span>
+  <h1>Source Resizer</h1>
+  <span id="status" style="color:var(--muted);font-size:11px"></span>
+  <button class="ibtn" id="gear" aria-label="Connection">⚙</button>
+</div>
+
+<main>
+  <div class="conn hidden" id="conn">
+    <div class="row"><label class="f" data-i18n="host" for="host"></label><input type="text" id="host" class="grow" value="localhost"></div>
+    <div class="row"><label class="f" data-i18n="port" for="port"></label><input type="number" id="port" value="4455" min="1" max="65535" style="width:90px"></div>
+    <div class="row"><label class="f" data-i18n="password" for="pass"></label><input type="password" id="pass" class="grow"></div>
+    <div class="row"><span class="grow msg" id="connMsg"></span><button class="btn primary" id="connectBtn"></button></div>
+  </div>
+
+  <div id="tools" style="display:flex;flex-direction:column;gap:8px">
+    <div class="top">
+      <div class="grid" id="grid"></div>
+      <div class="side">
+        <div class="now" id="now"></div>
+        <label class="row"><input type="checkbox" id="keep"><span data-i18n="keep"></span></label>
+        <div class="row">
+          <button class="btn" id="dotBtn" data-i18n="dot_by_dot"></button>
+          <button class="btn" id="canvasBtn" data-i18n="canvas"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hdr" data-i18n="custom"></div>
+    <div class="row">
+      <input type="number" id="cw" min="1" max="16384" value="1280" aria-label="W">
+      <span>×</span>
+      <input type="number" id="ch" min="1" max="16384" value="720" aria-label="H">
+      <small id="cr" style="color:var(--muted)"></small>
+      <span class="grow"></span>
+      <button class="btn primary" id="applyBtn" data-i18n="apply"></button>
+      <button class="ibtn" id="favBtn" data-i18n-title="add_fav">☆</button>
+    </div>
+
+    <div class="hdr" data-i18n="favorites"></div>
+    <div class="sizes" id="favs"></div>
+    <div id="groups" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+</main>
+
+<footer id="meta"></footer>
+
+<script>
+"use strict";
+const I18N = {
+  en:{host:"Host",port:"Port",password:"Password",connect:"Connect",disconnect:"Disconnect",st_connected:"Connected",st_connecting:"Connecting…",st_disconnected:"Disconnected",
+    auth_failed:"Wrong password.",conn_failed:"Could not connect. Enable the WebSocket server in Tools → WebSocket Server Settings.",no_script:"Load the script in Tools → Scripts.",
+    keep:"Keep aspect ratio",dot_by_dot:"Dot by dot",canvas:"Full canvas",custom:"Custom size",apply:"Apply",add_fav:"Add to favorites",favorites:"Favorites",no_favs:"Press ☆ to save a size here.",
+    no_sel:"Nothing selected",sel_n:"{n} items",retro_pc:"Retro PC",retro_game:"Retro game",legacy_pc:"Legacy PC",current_pc:"Current PC",
+    tl:"Top left",tc:"Top",tr:"Top right",ml:"Left",mc:"Center",mr:"Right",bl:"Bottom left",bc:"Bottom",br:"Bottom right"},
+  ja:{host:"ホスト",port:"ポート",password:"パスワード",connect:"接続",disconnect:"切断",st_connected:"接続中",st_connecting:"接続しています…",st_disconnected:"未接続",
+    auth_failed:"パスワードが違います。",conn_failed:"接続できません。ツール → WebSocketサーバー設定 でサーバーを有効にしてください。",no_script:"ツール → スクリプト でスクリプトを読み込んでください。",
+    keep:"縦横比を維持",dot_by_dot:"ドットバイドット",canvas:"キャンバス全体",custom:"指定サイズ",apply:"適用",add_fav:"お気に入りに追加",favorites:"お気に入り",no_favs:"☆ でサイズを保存できます。",
+    no_sel:"未選択",sel_n:"{n} 個選択中",retro_pc:"レトロPC",retro_game:"レトロゲーム",legacy_pc:"レガシィPC",current_pc:"現行PC",
+    tl:"左上",tc:"上",tr:"右上",ml:"左",mc:"中央",mr:"右",bl:"左下",bc:"下",br:"右下"},
+  ko:{host:"호스트",port:"포트",password:"비밀번호",connect:"연결",disconnect:"연결 해제",st_connected:"연결됨",st_connecting:"연결 중…",st_disconnected:"연결 안 됨",
+    auth_failed:"비밀번호가 올바르지 않습니다.",conn_failed:"연결할 수 없습니다. 도구 → WebSocket 서버 설정에서 서버를 활성화하세요.",no_script:"도구 → 스크립트에서 스크립트를 불러오세요.",
+    keep:"가로세로 비율 유지",dot_by_dot:"도트 바이 도트",canvas:"캔버스 전체",custom:"지정 크기",apply:"적용",add_fav:"즐겨찾기에 추가",favorites:"즐겨찾기",no_favs:"☆ 로 크기를 저장할 수 있습니다.",
+    no_sel:"선택 없음",sel_n:"{n}개 선택됨",retro_pc:"레트로 PC",retro_game:"레트로 게임",legacy_pc:"레거시 PC",current_pc:"현행 PC",
+    tl:"왼쪽 위",tc:"위",tr:"오른쪽 위",ml:"왼쪽",mc:"가운데",mr:"오른쪽",bl:"왼쪽 아래",bc:"아래",br:"오른쪽 아래"},
+  id:{host:"Host",port:"Port",password:"Kata sandi",connect:"Hubungkan",disconnect:"Putuskan",st_connected:"Terhubung",st_connecting:"Menghubungkan…",st_disconnected:"Terputus",
+    auth_failed:"Kata sandi salah.",conn_failed:"Tidak dapat terhubung. Aktifkan server WebSocket di Alat → Pengaturan Server WebSocket.",no_script:"Muat skrip di Alat → Skrip.",
+    keep:"Pertahankan rasio aspek",dot_by_dot:"Dot by dot",canvas:"Seluruh kanvas",custom:"Ukuran khusus",apply:"Terapkan",add_fav:"Tambah ke favorit",favorites:"Favorit",no_favs:"Tekan ☆ untuk menyimpan ukuran.",
+    no_sel:"Tidak ada pilihan",sel_n:"{n} item",retro_pc:"PC retro",retro_game:"Game retro",legacy_pc:"PC lawas",current_pc:"PC terkini",
+    tl:"Kiri atas",tc:"Atas",tr:"Kanan atas",ml:"Kiri",mc:"Tengah",mr:"Kanan",bl:"Kiri bawah",bc:"Bawah",br:"Kanan bawah"},
+  fr:{host:"Hôte",port:"Port",password:"Mot de passe",connect:"Connecter",disconnect:"Déconnecter",st_connected:"Connecté",st_connecting:"Connexion…",st_disconnected:"Déconnecté",
+    auth_failed:"Mot de passe incorrect.",conn_failed:"Connexion impossible. Activez le serveur WebSocket dans Outils → Paramètres du serveur WebSocket.",no_script:"Chargez le script dans Outils → Scripts.",
+    keep:"Conserver le ratio",dot_by_dot:"Dot by dot",canvas:"Canevas entier",custom:"Taille personnalisée",apply:"Appliquer",add_fav:"Ajouter aux favoris",favorites:"Favoris",no_favs:"Appuyez sur ☆ pour enregistrer une taille.",
+    no_sel:"Aucune sélection",sel_n:"{n} éléments",retro_pc:"PC rétro",retro_game:"Jeu rétro",legacy_pc:"PC ancien",current_pc:"PC actuel",
+    tl:"En haut à gauche",tc:"En haut",tr:"En haut à droite",ml:"À gauche",mc:"Centre",mr:"À droite",bl:"En bas à gauche",bc:"En bas",br:"En bas à droite"},
+  zh_TW:{host:"主機",port:"連接埠",password:"密碼",connect:"連線",disconnect:"中斷連線",st_connected:"已連線",st_connecting:"連線中…",st_disconnected:"未連線",
+    auth_failed:"密碼錯誤。",conn_failed:"無法連線。請在 工具 → WebSocket 伺服器設定 中啟用伺服器。",no_script:"請在 工具 → 腳本 中載入腳本。",
+    keep:"維持長寬比",dot_by_dot:"點對點",canvas:"整個畫布",custom:"自訂大小",apply:"套用",add_fav:"加入我的最愛",favorites:"我的最愛",no_favs:"按 ☆ 可儲存大小。",
+    no_sel:"未選取",sel_n:"已選取 {n} 個",retro_pc:"復古 PC",retro_game:"復古遊戲",legacy_pc:"舊型 PC",current_pc:"現行 PC",
+    tl:"左上",tc:"上",tr:"右上",ml:"左",mc:"中央",mr:"右",bl:"左下",bc:"下",br:"右下"},
+};
+const POSITIONS = ["tl","tc","tr","ml","mc","mr","bl","bc","br"];
+const GROUPS = {
+  retro_pc:   [[320,200],[640,200],[640,350],[640,400],[640,480],[720,400]],
+  retro_game: [[160,144],[240,160],[256,224],[256,240],[320,224],[320,240],[512,448],[640,448]],
+  legacy_pc:  [[800,600],[1024,600],[1024,768],[1280,800],[1280,1024],[1366,768],[1440,900],[1600,1200]],
+  current_pc: [[1280,720],[1600,900],[1920,1080],[1920,1200],[2560,1080],[2560,1440],[3440,1440],[3840,2160]],
+};
+const STATE_JS = "obs_source_resizer_state.js";
+const $ = (id) => document.getElementById(id);
+
+let L = I18N.en, lang = "en", scriptSeen = false, sel = { count: 0, w: 0, h: 0 }, favs = [];
+const t = (k, n) => { const s = L[k] ?? I18N.en[k] ?? k; return n === undefined ? s : s.replace("{n}", n); };
+function applyI18n() {
+  document.documentElement.lang = lang.replace("_", "-");
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.dataset.i18nTitle); el.setAttribute("aria-label", el.title); });
+  document.querySelectorAll(".a").forEach(el => { el.title = t(el.dataset.p); el.setAttribute("aria-label", t(el.dataset.p)); });
+  buildGroups(); renderFavs(); renderNow(); renderStatus();
+}
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("sr." + k); return v === null ? d : v; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("sr." + k, v); } catch {} },
+};
+
+/* ------------------------------------------------------------ aspect label */
+const NAMED = [[4,3],[16,9],[16,10],[21,9],[5,4],[3,2],[8,7],[1,1]];
+function ratioLabel(w, h) {
+  if (!w || !h) return "";
+  for (const [a, b] of NAMED) if (w * b === h * a) return `${a}:${b}`;
+  const gcd = (x, y) => y ? gcd(y, x % y) : x, g = gcd(w, h), a = w / g, b = h / g;
+  if (a <= 32 && b <= 32) return `${a}:${b}`;
+  for (const [a2, b2] of NAMED) if (Math.abs(w / h - a2 / b2) < 0.02) return `≈${a2}:${b2}`; // 1366x768, 3440x1440
+  return (w / h).toFixed(2) + ":1";
+}
+
+/* ---------------------------------------------------------------- SHA-256 */
+function sha256js(bytes) {
+  const K = [], H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  for (let p = 2, n = 0; n < 64; p++) {
+    let prime = true;
+    for (let d = 2; d * d <= p; d++) if (p % d === 0) { prime = false; break; }
+    if (prime) K[n++] = (Math.pow(p, 1 / 3) * 4294967296) | 0;
+  }
+  const l = bytes.length, total = ((l + 9 + 63) >> 6) << 6;
+  const m = new Uint8Array(total); m.set(bytes); m[l] = 0x80;
+  const dv = new DataView(m.buffer);
+  dv.setUint32(total - 4, (l * 8) >>> 0); dv.setUint32(total - 8, Math.floor(l / 0x20000000));
+  const w = new Uint32Array(64), rotr = (x, n) => (x >>> n) | (x << (32 - n));
+  for (let i = 0; i < total; i += 64) {
+    for (let j = 0; j < 16; j++) w[j] = dv.getUint32(i + j * 4);
+    for (let j = 16; j < 64; j++) {
+      const s0 = rotr(w[j-15], 7) ^ rotr(w[j-15], 18) ^ (w[j-15] >>> 3);
+      const s1 = rotr(w[j-2], 17) ^ rotr(w[j-2], 19) ^ (w[j-2] >>> 10);
+      w[j] = (w[j-16] + s0 + w[j-7] + s1) | 0;
+    }
+    let [a, b, c, d, e, f, g, h] = H;
+    for (let j = 0; j < 64; j++) {
+      const t1 = (h + (rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25)) + ((e & f) ^ (~e & g)) + K[j] + w[j]) | 0;
+      const t2 = ((rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+      h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+    }
+    H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+    H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+  }
+  const out = new Uint8Array(32), odv = new DataView(out.buffer);
+  H.forEach((v, i) => odv.setUint32(i * 4, v >>> 0));
+  return out;
+}
+async function sha256b64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let digest;
+  try { digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)); }
+  catch { digest = sha256js(bytes); }
+  return btoa(String.fromCharCode(...digest));
+}
+
+/* ---------------------------------------------------------- obs-websocket */
+const obs = {
+  ws: null, ready: false, reqId: 0, pending: new Map(), wanted: false,
+  connect(host, port, password) {
+    this.close();
+    this.wanted = true;
+    setStatus("wait");
+    return new Promise((resolve, reject) => {
+      let ws;
+      try { ws = new WebSocket(`ws://${host}:${port}`); } catch (e) { setStatus("bad"); return reject(e); }
+      this.ws = ws;
+      ws.onmessage = async (ev) => {
+        const msg = JSON.parse(ev.data);
+        if (msg.op === 0) {
+          const d = { rpcVersion: 1, eventSubscriptions: 0 };
+          const a = msg.d.authentication;
+          if (a) d.authentication = await sha256b64((await sha256b64(password + a.salt)) + a.challenge);
+          ws.send(JSON.stringify({ op: 1, d }));
+        } else if (msg.op === 2) {
+          this.ready = true; setStatus("ok"); resolve();
+        } else if (msg.op === 7) {
+          const p = this.pending.get(msg.d.requestId);
+          if (!p) return;
+          this.pending.delete(msg.d.requestId);
+          msg.d.requestStatus.result ? p.res(msg.d.responseData || {})
+            : p.rej(new Error(msg.d.requestStatus.comment || ("code " + msg.d.requestStatus.code)));
+        }
+      };
+      ws.onclose = (e) => {
+        if (this.ws !== ws) return; // closed on purpose: a newer connection may already be in place
+        const wasReady = this.ready;
+        this.ready = false; this.ws = null;
+        for (const p of this.pending.values()) p.rej(new Error("closed"));
+        this.pending.clear();
+        setStatus("bad", e.code === 4009 ? "auth_failed" : (wasReady ? "" : "conn_failed"));
+        reject(new Error("closed " + e.code));
+        if (this.wanted && e.code !== 4009) setTimeout(() => { if (this.wanted && !this.ws) autoConnect(); }, 5000);
+      };
+    });
+  },
+  close() {
+    this.wanted = false;
+    if (this.ws) { try { this.ws.close(); } catch {} }
+    this.ws = null; this.ready = false;
+    for (const p of this.pending.values()) p.rej(new Error("closed"));
+    this.pending.clear();
+  },
+  call(requestType, requestData = {}) {
+    if (!this.ready) return Promise.reject(new Error("not connected"));
+    const requestId = "r" + (++this.reqId);
+    return new Promise((res, rej) => {
+      this.pending.set(requestId, { res, rej });
+      this.ws.send(JSON.stringify({ op: 6, d: { requestType, requestId, requestData } }));
+    });
+  },
+};
+
+let statusKind = "bad", statusMsg = "";
+function setStatus(kind, msg = "") { statusKind = kind; statusMsg = msg; renderStatus(); }
+function renderStatus() {
+  $("dot").className = "dot " + (statusKind === "ok" ? "ok" : statusKind === "wait" ? "wait" : "");
+  $("status").textContent = t(statusKind === "ok" ? "st_connected" : statusKind === "wait" ? "st_connecting" : "st_disconnected");
+  $("connMsg").textContent = statusMsg && t(statusMsg);
+  $("connectBtn").textContent = statusKind === "ok" ? t("disconnect") : t("connect");
+  if (statusKind === "bad" && statusMsg) $("conn").classList.remove("hidden");
+  $("tools").classList.toggle("disabled", statusKind !== "ok");
+}
+
+function autoConnect() {
+  const host = $("host").value.trim() || "localhost", port = $("port").value || "4455";
+  obs.connect(host, port, $("pass").value).catch(() => {});
+}
+
+/* ------------------------------------------------------------ script state */
+function pollState() {
+  const s = document.createElement("script");
+  s.charset = "utf-8";
+  s.src = STATE_JS + "?t=" + Date.now();
+  s.onload = () => s.remove();
+  s.onerror = () => { s.remove(); if (!scriptSeen) $("now").textContent = t("no_script"); };
+  document.head.appendChild(s);
+}
+window.srState = (st) => {
+  scriptSeen = true;
+  if (st.lang && st.lang !== lang) { lang = I18N[st.lang] ? st.lang : "en"; L = I18N[lang]; applyI18n(); }
+  sel = st; renderNow();
+  if (st.favs.join() !== favs.join()) { favs = st.favs; renderFavs(); }
+  $("meta").textContent = `${st.name} v${st.version} · ${st.buildDate} · ${st.author}`;
+};
+function renderNow() {
+  if (!scriptSeen) return;
+  const el = $("now");
+  if (!sel.count) { el.textContent = t("no_sel"); return; }
+  el.textContent = `${sel.w} × ${sel.h} `;
+  const small = document.createElement("small");
+  small.textContent = ratioLabel(sel.w, sel.h) + (sel.count > 1 ? " · " + t("sel_n", sel.count) : "");
+  el.append(small);
+}
+
+/* ----------------------------------------------------------------- commands */
+const hotkey = (name) => obs.call("TriggerHotkeyByName", { hotkeyName: name }).catch(() => {});
+// Hotkeys carry no data, so the size waits in the profile config; requests on one socket can
+// run out of order, hence the await.
+async function command(cmd) {
+  try {
+    await obs.call("SetProfileParameter", { parameterCategory: "SourceResizer", parameterName: "cmd", parameterValue: cmd });
+    await hotkey("sr_command");
+  } catch {}
+}
+const keep = () => $("keep").checked ? 1 : 0;
+const applySize = (w, h) => command(`size ${w} ${h} ${keep()}`);
+
+function sizeButton(w, h) {
+  const b = document.createElement("button");
+  b.className = "s";
+  b.append(`${w}×${h}`);
+  const small = document.createElement("small");
+  small.textContent = ratioLabel(w, h);
+  b.append(small);
+  b.onclick = () => applySize(w, h);
+  return b;
+}
+function buildGroups() {
+  const box = $("groups");
+  box.textContent = "";
+  for (const [key, list] of Object.entries(GROUPS)) {
+    const hdr = document.createElement("div");
+    hdr.className = "hdr"; hdr.textContent = t(key);
+    const sizes = document.createElement("div");
+    sizes.className = "sizes";
+    sizes.append(...list.map(([w, h]) => sizeButton(w, h)));
+    box.append(hdr, sizes);
+  }
+}
+function renderFavs() {
+  const box = $("favs");
+  box.textContent = "";
+  if (!favs.length) {
+    const e = document.createElement("div");
+    e.className = "empty"; e.textContent = t("no_favs");
+    box.append(e);
+    return;
+  }
+  for (const f of favs) {
+    const [w, h] = f.split("x").map(Number);
+    const wrap = document.createElement("div");
+    wrap.className = "fav";
+    const x = document.createElement("button");
+    x.className = "x"; x.textContent = "×"; x.setAttribute("aria-label", "Remove " + f);
+    x.onclick = () => command(`fav- ${w} ${h}`);
+    wrap.append(sizeButton(w, h), x);
+    box.append(wrap);
+  }
+}
+function customSize() {
+  const w = parseInt($("cw").value, 10), h = parseInt($("ch").value, 10);
+  return w >= 1 && h >= 1 && w <= 16384 && h <= 16384 ? [w, h] : null;
+}
+function renderCustomRatio() { const c = customSize(); $("cr").textContent = c ? ratioLabel(c[0], c[1]) : ""; }
+
+for (const p of POSITIONS) {
+  const b = document.createElement("button");
+  b.className = "a"; b.dataset.p = p;
+  b.append(document.createElement("i"));
+  b.onclick = () => hotkey("sr_move_" + p);
+  $("grid").append(b);
+}
+$("dotBtn").onclick = () => hotkey("sr_dot");
+$("canvasBtn").onclick = () => command(`canvas ${keep()}`);
+$("applyBtn").onclick = () => { const c = customSize(); if (c) applySize(c[0], c[1]); };
+$("favBtn").onclick = () => { const c = customSize(); if (c) command(`fav+ ${c[0]} ${c[1]}`); };
+$("cw").oninput = $("ch").oninput = renderCustomRatio;
+$("keep").checked = store.get("keep", "1") === "1";
+$("keep").onchange = () => store.set("keep", keep());
+
+$("gear").onclick = () => $("conn").classList.toggle("hidden");
+$("connectBtn").onclick = () => {
+  if (statusKind === "ok") { obs.close(); setStatus("bad"); return; }
+  store.set("host", $("host").value); store.set("port", $("port").value); store.set("pass", $("pass").value);
+  autoConnect();
+};
+$("host").value = store.get("host", "localhost");
+$("port").value = store.get("port", "4455");
+$("pass").value = store.get("pass", "");
+
+applyI18n();
+renderCustomRatio();
+pollState();
+setInterval(pollState, 1000);
+autoConnect();
+</script>
+</body>
+</html>
