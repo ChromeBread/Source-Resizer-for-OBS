@@ -1,5 +1,6 @@
 {
   "app": "Source Resizer for OBS",
+  "admin": true,
   "main": "obs_source_resizer.lua",
   "items": [
     { "name": "obs_source_resizer.lua", "kind": "core" },

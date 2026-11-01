@@ -47,6 +47,7 @@ local LANG_NAMES = {
 
 local I18N = {
 	en = {
+		ws_host = "WebSocket host", ws_port = "WebSocket port", ws_password = "WebSocket password",
 		dock_show = "Show Dock URL", dock_hide = "Hide Dock URL",
 		uninstall_info = "<b>Uninstall</b><br>1. Export your settings below if you want to keep them.<br>2. Tools → Scripts: select this script and press −.<br>3. Run Safe_Uninstaller.bat from the folder below. To remove files by hand, delete only these and leave the folder itself:<br><br>%s<br>%s",
 		backup_export_file = "Export settings to", backup_export = "Export settings",
@@ -59,11 +60,12 @@ local I18N = {
 		language = "Language", lang_auto = "Auto (OBS)",
 		debug_on = "Debug Mode: ON", debug_off = "Debug Mode: OFF",
 		dock_url = "Dock URL",
-		dock_howto = "1. Copy the Dock URL.\n2. In OBS: Docks → Custom Browser Docks… → enter a name and paste the URL.\n3. The dock talks to OBS via WebSocket (Tools → WebSocket Server Settings). Enter the port / password in the dock (⚙).",
+		dock_howto = "1. Copy the Dock URL.\n2. In OBS: Docks → Custom Browser Docks… → enter a name and paste the URL.\n3. The dock talks to OBS via WebSocket (Tools → WebSocket Server Settings). Enter the same port / password below.",
 		hk_move = "Move to: %s", hk_dot = "Dot by dot",
 		tl = "Top left", tc = "Top", tr = "Top right", ml = "Left", mc = "Center", mr = "Right", bl = "Bottom left", bc = "Bottom", br = "Bottom right",
 	},
 	ja = {
+		ws_host = "WebSocket ホスト", ws_port = "WebSocket ポート", ws_password = "WebSocket パスワード",
 		dock_show = "ドックURLを表示", dock_hide = "ドックURLを隠す",
 		uninstall_info = "<b>アンインストール</b><br>1. 設定を残す場合は、下の項目で書き出します。<br>2. ツール → スクリプト でこのスクリプトを選び、− を押します。<br>3. 下のフォルダにある Safe_Uninstaller.bat を実行します。手動で消す場合は次のファイルだけを削除し、フォルダ自体は消さないでください。<br><br>%s<br>%s",
 		backup_export_file = "設定の書き出し先", backup_export = "設定を書き出す",
@@ -76,11 +78,12 @@ local I18N = {
 		language = "言語", lang_auto = "自動 (OBS)",
 		debug_on = "デバッグモード: ON", debug_off = "デバッグモード: OFF",
 		dock_url = "ドックURL",
-		dock_howto = "1. ドックURLをコピーします。\n2. OBSの「ドック → カスタムブラウザドック…」で名前を入力し、URLを貼り付けます。\n3. ドックは WebSocket（ツール → WebSocketサーバー設定）でOBSと通信します。ドック内（⚙）でポート / パスワードを入力してください。",
+		dock_howto = "1. ドックURLをコピーします。\n2. OBSの「ドック → カスタムブラウザドック…」で名前を入力し、URLを貼り付けます。\n3. ドックは WebSocket（ツール → WebSocketサーバー設定）でOBSと通信します。同じポートとパスワードを下の欄に入力します。",
 		hk_move = "移動: %s", hk_dot = "ドットバイドット",
 		tl = "左上", tc = "上", tr = "右上", ml = "左", mc = "中央", mr = "右", bl = "左下", bc = "下", br = "右下",
 	},
 	ko = {
+		ws_host = "WebSocket 호스트", ws_port = "WebSocket 포트", ws_password = "WebSocket 비밀번호",
 		dock_show = "도크 URL 표시", dock_hide = "도크 URL 숨기기",
 		uninstall_info = "<b>제거</b><br>1. 설정을 유지하려면 아래 항목에서 내보내세요.<br>2. 도구 → 스크립트에서 이 스크립트를 선택하고 − 를 누르세요.<br>3. 아래 폴더의 Safe_Uninstaller.bat을 실행하세요. 직접 지울 때는 다음 파일만 삭제하고 폴더 자체는 지우지 마세요.<br><br>%s<br>%s",
 		backup_export_file = "설정 내보내기 위치", backup_export = "설정 내보내기",
@@ -93,11 +96,12 @@ local I18N = {
 		language = "언어", lang_auto = "자동 (OBS)",
 		debug_on = "디버그 모드: ON", debug_off = "디버그 모드: OFF",
 		dock_url = "도크 URL",
-		dock_howto = "1. 도크 URL을 복사합니다.\n2. OBS에서 도크 → 사용자 지정 브라우저 도크… 에 이름을 입력하고 URL을 붙여넣습니다.\n3. 도크는 WebSocket(도구 → WebSocket 서버 설정)으로 OBS와 통신합니다. 도크(⚙)에서 포트 / 비밀번호를 입력하세요.",
+		dock_howto = "1. 도크 URL을 복사합니다.\n2. OBS에서 도크 → 사용자 지정 브라우저 도크… 에 이름을 입력하고 URL을 붙여넣습니다.\n3. 도크는 WebSocket(도구 → WebSocket 서버 설정)으로 OBS와 통신합니다. 같은 포트와 비밀번호를 아래 칸에 입력하세요.",
 		hk_move = "이동: %s", hk_dot = "도트 바이 도트",
 		tl = "왼쪽 위", tc = "위", tr = "오른쪽 위", ml = "왼쪽", mc = "가운데", mr = "오른쪽", bl = "왼쪽 아래", bc = "아래", br = "오른쪽 아래",
 	},
 	id = {
+		ws_host = "Host WebSocket", ws_port = "Port WebSocket", ws_password = "Kata sandi WebSocket",
 		dock_show = "Tampilkan URL Dock", dock_hide = "Sembunyikan URL Dock",
 		uninstall_info = "<b>Hapus instalasi</b><br>1. Ekspor pengaturan di bawah jika ingin menyimpannya.<br>2. Alat → Skrip: pilih skrip ini lalu tekan −.<br>3. Jalankan Safe_Uninstaller.bat dari folder di bawah. Untuk menghapus manual, hapus hanya file berikut dan jangan hapus foldernya:<br><br>%s<br>%s",
 		backup_export_file = "Ekspor pengaturan ke", backup_export = "Ekspor pengaturan",
@@ -110,11 +114,12 @@ local I18N = {
 		language = "Bahasa", lang_auto = "Otomatis (OBS)",
 		debug_on = "Mode Debug: ON", debug_off = "Mode Debug: OFF",
 		dock_url = "URL Dock",
-		dock_howto = "1. Salin URL Dock.\n2. Di OBS: Dock → Dock Peramban Kustom… → masukkan nama dan tempel URL.\n3. Dock berkomunikasi dengan OBS melalui WebSocket (Alat → Pengaturan Server WebSocket). Masukkan port / kata sandi di dock (⚙).",
+		dock_howto = "1. Salin URL Dock.\n2. Di OBS: Dock → Dock Peramban Kustom… → masukkan nama dan tempel URL.\n3. Dock berkomunikasi dengan OBS melalui WebSocket (Alat → Pengaturan Server WebSocket). Masukkan port / kata sandi yang sama di bawah.",
 		hk_move = "Pindah ke: %s", hk_dot = "Dot by dot",
 		tl = "Kiri atas", tc = "Atas", tr = "Kanan atas", ml = "Kiri", mc = "Tengah", mr = "Kanan", bl = "Kiri bawah", bc = "Bawah", br = "Kanan bawah",
 	},
 	fr = {
+		ws_host = "Hôte WebSocket", ws_port = "Port WebSocket", ws_password = "Mot de passe WebSocket",
 		dock_show = "Afficher l'URL du dock", dock_hide = "Masquer l'URL du dock",
 		uninstall_info = "<b>Désinstallation</b><br>1. Exportez vos réglages ci-dessous si vous voulez les garder.<br>2. Outils → Scripts : sélectionnez ce script et cliquez sur −.<br>3. Lancez Safe_Uninstaller.bat depuis le dossier ci-dessous. Pour supprimer à la main, effacez uniquement ces fichiers, sans toucher au dossier :<br><br>%s<br>%s",
 		backup_export_file = "Exporter les réglages vers", backup_export = "Exporter les réglages",
@@ -127,11 +132,12 @@ local I18N = {
 		language = "Langue", lang_auto = "Automatique (OBS)",
 		debug_on = "Mode débogage : ON", debug_off = "Mode débogage : OFF",
 		dock_url = "URL du dock",
-		dock_howto = "1. Copiez l'URL du dock.\n2. Dans OBS : Docks → Docks de navigateur personnalisés… → saisissez un nom et collez l'URL.\n3. Le dock communique avec OBS via WebSocket (Outils → Paramètres du serveur WebSocket). Saisissez le port / mot de passe dans le dock (⚙).",
+		dock_howto = "1. Copiez l'URL du dock.\n2. Dans OBS : Docks → Docks de navigateur personnalisés… → saisissez un nom et collez l'URL.\n3. Le dock communique avec OBS via WebSocket (Outils → Paramètres du serveur WebSocket). Saisissez le même port / mot de passe ci-dessous.",
 		hk_move = "Déplacer : %s", hk_dot = "Dot by dot",
 		tl = "En haut à gauche", tc = "En haut", tr = "En haut à droite", ml = "À gauche", mc = "Centre", mr = "À droite", bl = "En bas à gauche", bc = "En bas", br = "En bas à droite",
 	},
 	zh_TW = {
+		ws_host = "WebSocket 主機", ws_port = "WebSocket 連接埠", ws_password = "WebSocket 密碼",
 		dock_show = "顯示 Dock 網址", dock_hide = "隱藏 Dock 網址",
 		uninstall_info = "<b>解除安裝</b><br>1. 若要保留設定，請先在下方匯出。<br>2. 在 工具 → 腳本 中選取此腳本並按 −。<br>3. 執行下方資料夾中的 Safe_Uninstaller.bat。若要手動刪除，請只刪除下列檔案，不要刪除資料夾本身。<br><br>%s<br>%s",
 		backup_export_file = "設定匯出至", backup_export = "匯出設定",
@@ -144,7 +150,7 @@ local I18N = {
 		language = "語言", lang_auto = "自動 (OBS)",
 		debug_on = "偵錯模式：ON", debug_off = "偵錯模式：OFF",
 		dock_url = "Dock 網址",
-		dock_howto = "1. 複製 Dock 網址。\n2. 在 OBS 中：停駐視窗 → 自訂瀏覽器停駐視窗… → 輸入名稱並貼上網址。\n3. Dock 透過 WebSocket（工具 → WebSocket 伺服器設定）與 OBS 通訊，請在 Dock（⚙）中輸入連接埠與密碼。",
+		dock_howto = "1. 複製 Dock 網址。\n2. 在 OBS 中：停駐視窗 → 自訂瀏覽器停駐視窗… → 輸入名稱並貼上網址。\n3. Dock 透過 WebSocket（工具 → WebSocket 伺服器設定）與 OBS 通訊，請在下方輸入相同的連接埠與密碼。",
 		hk_move = "移動: %s", hk_dot = "點對點",
 		tl = "左上", tc = "上", tr = "右上", ml = "左", mc = "中央", mr = "右", bl = "左下", bc = "下", br = "右下",
 	},
@@ -352,6 +358,18 @@ end
 
 local last_state = nil
 
+-- The dock has no connection fields, so it reads these from here, like OBS's own WebSocket settings.
+local ws_json = '{"host":"localhost","port":4455,"password":""}'
+
+local function set_ws(settings)
+	local function quoted(s)
+		return '"' .. (s:gsub('[%c"\\]', function(c) return string.format("\\u%04x", c:byte()) end)) .. '"'
+	end
+	local host = obs.obs_data_get_string(settings, "ws_host")
+	ws_json = string.format('{"host":%s,"port":%d,"password":%s}', quoted(host ~= "" and host or "localhost"),
+		obs.obs_data_get_int(settings, "ws_port"), quoted(obs.obs_data_get_string(settings, "ws_password")))
+end
+
 local function write_dock_state()
 	local count, w, h = 0, 0, 0
 	for_selected(function(it)
@@ -364,9 +382,9 @@ local function write_dock_state()
 	local favs = {}
 	for i, f in ipairs(favorites) do favs[i] = '"' .. f .. '"' end
 	local st = string.format(
-		'srState({"lang":"%s","name":"%s","version":"%s","buildDate":"%s","author":"%s","count":%d,"w":%d,"h":%d,"favs":[%s]});',
+		'srState({"lang":"%s","name":"%s","version":"%s","buildDate":"%s","author":"%s","count":%d,"w":%d,"h":%d,"favs":[%s],"ws":%s});',
 		current_lang, SCRIPT_NAME, VERSION, format_date(BUILD_DATE, current_lang), AUTHOR,
-		count, w, h, table.concat(favs, ","))
+		count, w, h, table.concat(favs, ","), ws_json)
 	if st ~= last_state then
 		last_state = st
 		obs.os_quick_write_utf8_file(script_dir() .. STATE_JS, st, #st, false)
@@ -435,7 +453,7 @@ resolve_lang()
 local script_settings = nil
 
 local UNINSTALL_FILES = "obs_source_resizer.lua<br>obs_source_resizer_dock.html<br>obs_source_resizer_prefs.json<br>obs_source_resizer_state.js"
-local BACKUP_SKIP = { "dock_url", "backup_export_file", "backup_import_file" }
+local BACKUP_SKIP = { "dock_url", "ws_password", "backup_export_file", "backup_import_file" }
 
 local DEBUG_LABELS = {
 	backup_export_file = "backup_export_file", backup_export = "backup_export",
@@ -445,7 +463,10 @@ local DEBUG_LABELS = {
 local dock_shown = false
 
 local function apply_debug_props(props)
-	for _, name in ipairs({ "dock_url", "dock_info" }) do
+	for _, name in ipairs({ "ws_host", "ws_port", "ws_password" }) do
+		obs.obs_property_set_description(obs.obs_properties_get(props, name), T(name))
+	end
+	for _, name in ipairs({ "dock_url", "dock_info", "ws_host", "ws_port", "ws_password" }) do
 		obs.obs_property_set_visible(obs.obs_properties_get(props, name), dock_shown or debug_mode)
 	end
 	obs.obs_property_set_description(obs.obs_properties_get(props, "dock_toggle"), T(dock_shown and "dock_hide" or "dock_show"))
@@ -599,6 +620,9 @@ function script_properties()
 	obs.obs_properties_add_button(props, "dock_toggle", T("dock_show"), on_dock_toggle)
 	obs.obs_properties_add_text(props, "dock_url", T("dock_url"), obs.OBS_TEXT_DEFAULT)
 	obs.obs_properties_add_text(props, "dock_info", T("dock_howto"), obs.OBS_TEXT_INFO)
+	obs.obs_properties_add_text(props, "ws_host", T("ws_host"), obs.OBS_TEXT_DEFAULT)
+	obs.obs_properties_add_int(props, "ws_port", T("ws_port"), 1, 65535, 1)
+	obs.obs_properties_add_text(props, "ws_password", T("ws_password"), obs.OBS_TEXT_PASSWORD)
 	obs.obs_properties_add_button(props, "debug_toggle", T("debug_off"), on_debug_toggle)
 	add_debug_props(props)
 	apply_script_props(props)
@@ -608,6 +632,9 @@ end
 function script_defaults(settings)
 	obs.obs_data_set_default_string(settings, "language", "auto")
 	obs.obs_data_set_default_bool(settings, "debug_mode", false)
+	obs.obs_data_set_default_string(settings, "ws_host", "localhost")
+	obs.obs_data_set_default_int(settings, "ws_port", 4455)
+	obs.obs_data_set_default_string(settings, "ws_password", "")
 end
 
 -- The dock's nine buttons and dot by dot are plain hotkeys, so they work from the keyboard too.
@@ -640,11 +667,17 @@ function script_save(settings)
 	end
 end
 
+function script_update(settings)
+	set_ws(settings)
+	write_dock_state()
+end
+
 function script_load(settings)
 	script_settings = settings
 	obs.obs_data_set_string(settings, "language", lang_setting)
 	obs.obs_data_set_string(settings, "dock_url", file_url(script_dir() .. DOCK_HTML))
 	debug_mode = obs.obs_data_get_bool(settings, "debug_mode")
+	set_ws(settings)
 	register_hotkeys(settings)
 	write_dock_state()
 	obs.timer_add(write_dock_state, POLL_MS)
