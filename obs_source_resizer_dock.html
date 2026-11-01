@@ -50,6 +50,9 @@ input[type=checkbox]{accent-color:var(--accent);margin:0}
 .a:hover i,.a:focus-visible i{background:var(--text)}
 .a:active i{background:var(--accent)}
 .side{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;justify-content:center}
+div:has(>.side){flex-wrap:wrap}
+.side{min-width:88px}
+.side,.side .btn{white-space:normal;overflow-wrap:anywhere}
 .now{font-variant-numeric:tabular-nums;font-size:13px;font-weight:600}
 .now small{font-weight:400;color:var(--muted);font-size:11px}
 .hdr{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:11px}
