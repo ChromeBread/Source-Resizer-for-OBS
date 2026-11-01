@@ -1,6 +1,10 @@
+**English** | [日本語](README.ja.md) | [한국어](README.ko.md) | [Bahasa Indonesia](README.id.md) | [Français](README.fr.md) | [繁體中文](README.zh-TW.md)
+
 # Source Resizer for OBS
 
 An OBS Studio (Windows) Lua script with a dock for laying out any source (video, image, capture, text…) from corner to corner.
+
+<img src="docs/images/en/source_dock.png" alt="Source Resizer dock" width="340">
 
 - Nine buttons push the selected items flush against the canvas edge. Rotated, cropped and bounded items work too
 - One-click sizes: retro PC, retro game, legacy PC and current PC resolutions, each labeled with its aspect ratio (4:3, 16:9…)

@@ -17,7 +17,7 @@ local obs = obslua
 -- Meta
 --------------------------------------------------------------------------------
 local SCRIPT_NAME = "Source Resizer"
-local VERSION     = "1.1.0"
+local VERSION     = "1.2.0"
 local BUILD_DATE  = { year = 2026, month = 11, day = 1 }
 local AUTHOR      = "ChromeBread feat. BlackDream"
 local DOCK_HTML   = "obs_source_resizer_dock.html"
