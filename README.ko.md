@@ -4,7 +4,7 @@
 
 영상, 이미지, 캡처, 텍스트 등 모든 소스를 구석구석 배치할 수 있는 도크가 포함된 OBS Studio (Windows) Lua 스크립트입니다.
 
-<img src="docs/images/ko/source_dock.png" alt="Source Resizer 도크" width="340">
+<img src="docs/images/en/source_dock.png" alt="Source Resizer 도크" width="280">
 
 - 9개의 버튼으로 선택한 항목을 캔버스 가장자리에 딱 맞게 붙입니다. 회전, 자르기, 영역 지정 항목도 지원합니다
 - 원클릭 크기: 레트로 PC, 레트로 게임, 레거시 PC, 현행 PC 해상도를 화면비 (4:3, 16:9 등)와 함께 표시합니다
@@ -18,7 +18,7 @@
 가로세로 비율 유지가 ON이면 지정한 크기 안에 맞추고, OFF이면 그 크기로 늘립니다.
 
 ## 설치
-1. `obs_source_resizer.lua`와 `obs_source_resizer_dock.html`을 같은 폴더에 둡니다.
+1. `Source_Resizer_for_OBS` 폴더를 통째로 `%APPDATA%\obs-studio\plugin_config\`에 넣습니다 (이 경로를 탐색기 주소창에 붙여넣으면 열립니다).
 2. OBS → **도구 → 스크립트 → +** 에서 `obs_source_resizer.lua`를 선택합니다.
 3. **도크 URL 표시**를 누르고 **도크 URL**을 복사해 **도크 → 사용자 지정 브라우저 도크…** 에 붙여넣습니다.
 4. **도구 → WebSocket 서버 설정**을 켜고 같은 포트와 비밀번호를 스크립트 설정에 입력합니다.

@@ -4,7 +4,7 @@
 
 An OBS Studio (Windows) Lua script with a dock for laying out any source (video, image, capture, text…) from corner to corner.
 
-<img src="docs/images/en/source_dock.png" alt="Source Resizer dock" width="340">
+<img src="docs/images/en/source_dock.png" alt="Source Resizer dock" width="280">
 
 - Nine buttons push the selected items flush against the canvas edge. Rotated, cropped and bounded items work too
 - One-click sizes: retro PC, retro game, legacy PC and current PC resolutions, each labeled with its aspect ratio (4:3, 16:9…)
@@ -18,7 +18,7 @@ An OBS Studio (Windows) Lua script with a dock for laying out any source (video,
 With Keep aspect ratio ON, the source fits inside the chosen size. With it OFF, the source is stretched to exactly that size.
 
 ## Install
-1. Keep `obs_source_resizer.lua` and `obs_source_resizer_dock.html` in the same folder.
+1. Put the whole `Source_Resizer_for_OBS` folder into `%APPDATA%\obs-studio\plugin_config\` (paste this path into the Explorer address bar to open it).
 2. OBS → **Tools → Scripts → +** → select `obs_source_resizer.lua`.
 3. Press **Show Dock URL**, copy the **Dock URL**, then **Docks → Custom Browser Docks…** → paste it.
 4. Enable **Tools → WebSocket Server Settings** and enter the same port / password in the script settings.

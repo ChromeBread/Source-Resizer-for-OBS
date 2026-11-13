@@ -4,7 +4,7 @@
 
 映像、画像、キャプチャ、テキストなど、あらゆるソースを隅から隅まで配置できるドック付きの OBS Studio (Windows) Lua スクリプトです。
 
-<img src="docs/images/ja/source_dock.png" alt="Source Resizer ドック" width="340">
+<img src="docs/images/ja/source_dock.png" alt="Source Resizer ドック" width="280">
 
 - 9 個のボタンで、選択中のアイテムをキャンバスの端にぴったり寄せます。回転、クロップ、領域指定されたアイテムにも対応します
 - ワンクリックのサイズ: レトロ PC、レトロゲーム、レガシー PC、現行 PC の解像度を縦横比 (4:3、16:9 など) 付きで表示します
@@ -18,7 +18,7 @@
 縦横比の維持が ON のときは指定サイズの内側に収まり、OFF のときはそのサイズに合わせて引き伸ばします。
 
 ## インストール
-1. `obs_source_resizer.lua` と `obs_source_resizer_dock.html` を同じフォルダに置きます。
+1. `Source_Resizer_for_OBS` フォルダを丸ごと `%APPDATA%\obs-studio\plugin_config\` に置きます (このパスをエクスプローラーのアドレス欄に貼り付けると開けます)。
 2. OBS → **ツール → スクリプト → +** で `obs_source_resizer.lua` を選びます。
 3. **ドックURLを表示** を押して **ドックURL** をコピーし、**ドック → カスタムブラウザドック…** に貼り付けます。
 4. **ツール → WebSocketサーバー設定** を有効にし、同じポートとパスワードをスクリプトの設定に入力します。

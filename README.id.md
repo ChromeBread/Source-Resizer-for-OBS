@@ -4,7 +4,7 @@
 
 Skrip Lua untuk OBS Studio (Windows) dengan dock untuk menata sumber apa pun (video, gambar, tangkapan, teks…) dari sudut ke sudut.
 
-<img src="docs/images/id/source_dock.png" alt="Dock Source Resizer" width="340">
+<img src="docs/images/en/source_dock.png" alt="Dock Source Resizer" width="280">
 
 - Sembilan tombol menempelkan item terpilih ke tepi kanvas. Item yang diputar, dipotong, atau berbatas juga didukung
 - Ukuran sekali klik: resolusi PC retro, game retro, PC lama, dan PC saat ini, masing-masing dengan rasio aspek (4:3, 16:9…)
@@ -18,7 +18,7 @@ Skrip Lua untuk OBS Studio (Windows) dengan dock untuk menata sumber apa pun (vi
 Dengan Pertahankan rasio aspek ON, sumber muat di dalam ukuran yang dipilih. Dengan OFF, sumber direntangkan tepat ke ukuran itu.
 
 ## Instalasi
-1. Simpan `obs_source_resizer.lua` dan `obs_source_resizer_dock.html` di folder yang sama.
+1. Letakkan seluruh folder `Source_Resizer_for_OBS` di `%APPDATA%\obs-studio\plugin_config\` (tempel jalur ini di bilah alamat Explorer untuk membukanya).
 2. OBS → **Alat → Skrip → +** → pilih `obs_source_resizer.lua`.
 3. Tekan **Tampilkan URL Dock**, salin **URL Dock**, lalu **Dock → Dock Peramban Kustom…** → tempel.
 4. Aktifkan **Alat → Pengaturan Server WebSocket** dan masukkan port / kata sandi yang sama di pengaturan skrip.
