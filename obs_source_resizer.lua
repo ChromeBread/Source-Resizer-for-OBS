@@ -1,3 +1,4 @@
+-- cbOBScripts: order=320 name="Source Resizer"
 --[[
 ================================================================================
  Source Resizer  -  OBS Studio Lua script (Windows)
